@@ -1,0 +1,4 @@
+python-dotenv
+boto3
+openai
+docx
