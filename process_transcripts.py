@@ -18,7 +18,7 @@ if __name__ == "__main__":
     s3transcribe.download_transcripts(transcribe_folder)
 
     # Step 3: Parse transcriptions
-    print("Step 3: Parsing transcriptions...")
+    print("Step 3: Parsing and proofreading transcriptions...")
     parse.proofread_transcripts(transcribe_folder)
 
     print("Finished processing videos! View the resulting transcript and .docx file in the timestamped folder.")

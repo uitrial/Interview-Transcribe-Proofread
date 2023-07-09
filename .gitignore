@@ -162,3 +162,8 @@ cython_debug/
 bin/
 include/
 lib/
+
+# Ignore output folders that are named after date, created by the script.
+[0-9]*
+
+.DS_Store

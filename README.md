@@ -40,7 +40,7 @@ If you have any feedback, please reach out to me.
 Note:
 - Only supports .mp4
 - Still needs a quick manual proof-read, especially regarding names.
-
+- Costs approximately $0.08 in total cost per transcript.
 
 
 ![Uitrial TMS Badge](https://img.shields.io/badge/TMS-Uitrial-1972F5)
