@@ -3,9 +3,9 @@ import argparse
 
 if __name__ == "__main__":
     # Create Argument Parser
-    parser = argparse.ArgumentParser(description='Process video, create transcripts, proofread with OpenAI GPT4.')
-    parser.add_argument('input_folder', type=str, help='Input folder with .mp4 videos')
-    parser.add_argument('s3_folder', type=str, help='Output folder name in S3 bucket')
+    parser = argparse.ArgumentParser(description='Process video, create transcripts, proofread with OpenAI GPT.')
+    parser.add_argument('input_folder', type=str, help='Input folder with .mp4 interview video(s)')
+    parser.add_argument('s3_folder', type=str, help='Output folder name to save files to in S3 bucket')
     args = parser.parse_args()
 
     # Step 1: Upload videos to S3

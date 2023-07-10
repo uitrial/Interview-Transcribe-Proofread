@@ -10,12 +10,10 @@ def upload_to_s3(folder_path, folder_name):
     # Retrieve the access key and secret key from environment variables
     access_key = os.getenv('AWS_ACCESS_KEY_ID')
     secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    bucket_name = os.getenv('AWS_S3_BUCKET')
 
     # Create an S3 client
     s3_client = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-
-    # Specify the bucket name
-    bucket_name = 'uitrialspeech'
 
     # Check if the specified folder path exists
     if not os.path.isdir(folder_path):

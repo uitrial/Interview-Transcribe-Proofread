@@ -11,6 +11,7 @@ load_dotenv()
 # Retrieve the access key and secret key from environment variables
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+bucket_name = os.getenv('AWS_S3_BUCKET')
 
 # Create a Transcribe client
 transcribe_client = boto3.client('transcribe', region_name='eu-central-1', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
@@ -26,7 +27,7 @@ def transcribe_from_s3(folder_name):
 
     # List the objects in the specified S3 bucket and folder
     s3 = boto3.resource('s3')
-    bucket = s3.Bucket('uitrialspeech')
+    bucket = s3.Bucket(bucket_name)
     objects = bucket.objects.filter(Prefix=folder_name)
 
     # Iterate over the objects and transcribe each video
@@ -39,13 +40,13 @@ def transcribe_from_s3(folder_name):
             response = transcribe_client.start_transcription_job(
                 TranscriptionJobName=job_name,
                 LanguageCode=language_code,
-                Media={'MediaFileUri': f's3://uitrialspeech/{obj.key}'},
+                Media={'MediaFileUri': f's3://{bucket_name}/{obj.key}'},
                 MediaFormat='mp4',
                 Settings={
                     'MaxSpeakerLabels': number_of_speakers,
                     'ShowSpeakerLabels': True
                 },
-                OutputBucketName='uitrialspeech',  # Specify your S3 bucket where the transcriptions will be stored
+                OutputBucketName=bucket_name,  # Specify your S3 bucket where the transcriptions will be stored
                 OutputKey=f'{folder_name}/{output_folder}/{video_name}.json'  # Specify the output folder and filename
             )
 
@@ -71,14 +72,14 @@ def download_transcripts(transcribe_folder):
 
     # List the objects in the specified S3 bucket and folder
     s3 = boto3.resource('s3')
-    bucket = s3.Bucket('uitrialspeech')
+    bucket = s3.Bucket(bucket_name)
     objects = bucket.objects.filter(Prefix=transcribe_folder)
 
     # Iterate over the objects and download the transcripts
     for obj in objects:
         if obj.key.endswith('.json'):  # Assuming all JSON files have the .json extension
             output_file = os.path.join(transcribe_folder, os.path.basename(obj.key))
-            s3_client.download_file('uitrialspeech', obj.key, output_file)
+            s3_client.download_file(bucket_name, obj.key, output_file)
             print(f'Downloaded transcription: {output_file}')
 
 
