@@ -1,7 +1,9 @@
 
-# Project Title
+# Automated Interview Transcribe and Proofread
 
 This is a script to automate Interview transcription and proofreading and transcript formatting into .docx. Uses AWS Transcribe, S3, and OpenAI API (GPT3.5). 
+Produces very high-quality transcriptions, even with very bad sound quality input files.
+
 ## Installation
 
 - Python 3.10+
