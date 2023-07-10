@@ -7,7 +7,8 @@ Produces very high-quality transcriptions, even with very bad sound quality inpu
 ## Installation
 
 - Python 3.10+
-- [AWS IAM](https://us-east-1.console.aws.amazon.com/iamv2/) with access to S3, Transcribe
+- [AWS IAM](https://us-east-1.console.aws.amazon.com/iamv2/) with access to S3, AWS Transcribe
+- [S3 bucket](https://s3.console.aws.amazon.com/s3/buckets) with public access - so this script can upload and read bucket contents.
 - [OpenAI API key](https://platform.openai.com/account/api-keys)
 - See .envsample for what is needed 
 
