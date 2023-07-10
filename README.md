@@ -14,7 +14,7 @@ This is a script to automate Interview transcription and proofreading and transc
 ```bash
   pip3 install -r requirements.txt
 ```
-- Rename .envsample to .env and save with your keys.
+- Rename .envsample to .env and save with your keys and bucket name.
     
 ## Usage/Examples
 
