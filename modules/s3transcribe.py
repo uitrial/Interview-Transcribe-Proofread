@@ -4,6 +4,7 @@ import datetime
 from dotenv import load_dotenv
 import boto3
 import time
+import re
 
 # Load environment variables from .env file
 load_dotenv()
