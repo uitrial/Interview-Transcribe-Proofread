@@ -59,7 +59,7 @@ def transcribe_from_s3(folder_name):
         if len(response.get('TranscriptionJobSummaries', [])) == 0:
             break
 
-    time.sleep(15)  # Wait for 15 seconds
+        time.sleep(15)  # Wait for 15 seconds
 
     return f'{folder_name}/{output_folder}'
 
