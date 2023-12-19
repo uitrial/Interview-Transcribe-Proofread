@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import boto3
 import time
 import re
+from botocore.exceptions import ClientError
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,7 +24,7 @@ number_of_speakers = 2
 
 def transcribe_from_s3(folder_name):
     # Create a folder with the current timestamp as the folder name
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d')
     output_folder = f'transcriptions_{timestamp}'
 
     # List the objects in the specified S3 bucket and folder
@@ -33,25 +34,39 @@ def transcribe_from_s3(folder_name):
 
     # Iterate over the objects and transcribe each video
     for obj in objects:
-        if obj.key.endswith('.mp4'):  # Assuming all videos have the .mp4 extension
+        if obj.key.endswith('.mp4'):
             video_name = os.path.splitext(os.path.basename(obj.key))[0]
-            job_name = f'{video_name}_transcription_{timestamp}'
+            transcription_file_key = f'{folder_name}/{output_folder}/{video_name}.json'
 
-            # Configure the transcription job
-            response = transcribe_client.start_transcription_job(
-                TranscriptionJobName=job_name,
-                LanguageCode=language_code,
-                Media={'MediaFileUri': f's3://{bucket_name}/{obj.key}'},
-                MediaFormat='mp4',
-                Settings={
-                    'MaxSpeakerLabels': number_of_speakers,
-                    'ShowSpeakerLabels': True
-                },
-                OutputBucketName=bucket_name,  # Specify your S3 bucket where the transcriptions will be stored
-                OutputKey=f'{folder_name}/{output_folder}/{video_name}.json'  # Specify the output folder and filename
-            )
+            # Check if the transcription file already exists
+            try:
+                s3.Object(bucket_name, transcription_file_key).load()
+                print(f'Transcription file already exists for {video_name}. Using existing transcription.')
+            except ClientError as e:
+                # The file does not exist, proceed with transcription
+                if e.response['Error']['Code'] == '404':
+                    job_name = f'{video_name}_transcription_{timestamp}'
 
-            print(f'Started transcription job: {job_name}')
+                    # Configure and start the transcription job
+                    try:
+                        response = transcribe_client.start_transcription_job(
+                            TranscriptionJobName=job_name,
+                            LanguageCode=language_code,
+                            Media={'MediaFileUri': f's3://{bucket_name}/{obj.key}'},
+                            MediaFormat='mp4',
+                            Settings={
+                                'MaxSpeakerLabels': number_of_speakers,
+                                'ShowSpeakerLabels': True
+                            },
+                            OutputBucketName=bucket_name,
+                            OutputKey=transcription_file_key
+                        )
+                        print(f'Started transcription job: {job_name}')
+                    except transcribe_client.exceptions.ConflictException:
+                        print(f'Conflict error: Job name {job_name} already exists. Skipping this job.')
+                else:
+                    # Handle other possible exceptions
+                    print(f'Error checking for existing transcription file: {e}')
 
     # Wait for all transcription jobs to complete
     while True:

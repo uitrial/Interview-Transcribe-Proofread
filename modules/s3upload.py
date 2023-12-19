@@ -2,6 +2,7 @@ import os
 import argparse
 from dotenv import load_dotenv
 import boto3
+from botocore.exceptions import ClientError
 
 def upload_to_s3(folder_path, folder_name):
     # Load environment variables from .env file
@@ -26,10 +27,14 @@ def upload_to_s3(folder_path, folder_name):
             local_file_path = os.path.join(folder_path, filename)
             s3_key = os.path.join(folder_name, filename)
 
-            # Upload the file to S3
-            s3_client.upload_file(local_file_path, bucket_name, s3_key)
-
-            print(f'{local_file_path} uploaded to S3 bucket: {bucket_name}/{s3_key}')
+            # Check if the file already exists in S3
+            try:
+                s3_client.head_object(Bucket=bucket_name, Key=s3_key)
+                print(f'File already exists: {s3_key}. Skipping upload.')
+            except ClientError:
+                # The file does not exist, upload it
+                s3_client.upload_file(local_file_path, bucket_name, s3_key)
+                print(f'{local_file_path} uploaded to S3 bucket: {bucket_name}/{s3_key}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Upload videos to AWS S3')
